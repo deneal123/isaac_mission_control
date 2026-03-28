@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List, Optional, Dict, Any
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 import shutil
 from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
@@ -272,4 +272,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     logger.info(f"Starting Waypoint Selection UI Service on {args.host}:{args.port}")
-    uvicorn.run(app, host=args.host, port=args.port) 
+    uvicorn.run(app, host=args.host, port=args.port)
