@@ -31,8 +31,9 @@ COPY waypoint_selection_ui/ ./waypoint_selection_ui/
 # Create upload directories
 RUN mkdir -p uploads/maps uploads/configs
 
-# Expose the service port
-EXPOSE 8051
+# Set the environment variables
+ENV WAYPOINT_HOST ${WAYPOINT_HOST:-0.0.0.0}
+ENV WAYPOINT_PORT ${WAYPOINT_PORT:-8051}
 
 # Run the application
-CMD ["python", "-m", "waypoint_selection_ui.main"] 
+CMD ["python", "-m", "waypoint_selection_ui.main", "--host", "${WAYPOINT_HOST}", "--port", "${WAYPOINT_PORT}"]
