@@ -35,8 +35,7 @@ RUN mkdir -p uploads/maps uploads/configs
 ENV WAYPOINT_HOST ${WAYPOINT_HOST:-0.0.0.0}
 ENV WAYPOINT_PORT ${WAYPOINT_PORT:-8051}
 
-# Copy and set entrypoint
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Set entrypoint
+RUN chmod +x waypoint_selection_ui/entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["waypoint_selection_ui/entrypoint.sh"]
