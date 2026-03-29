@@ -485,13 +485,36 @@ async def update_robot_map(robot_name: str, map_id: str, request: Request):
         map_hash=map_hash,
         timeout_s=600,
     )
+
+    await _wait_for_map_action(mc, robot_name, "downloadMap", timeout_s=900)
+
     await mc.mission_dispatch_client.enable_map_action(
         [robot],
         map_id=map_id_val,
         timeout_s=600,
     )
 
+    await _wait_for_map_action(mc, robot_name, "enableMap", timeout_s=900)
+
     return {"success": True,
             "map_id": map_id_val,
             "robot": robot_name,
             "map_download_link": download_link}
+
+
+async def _wait_for_map_action(mc: MissionControl, robot_name: str, action_type: str, timeout_s: int = 600):
+    """Wait for a map mission action to complete in mission database."""
+    start = time.time()
+    while time.time() - start < timeout_s:
+        missions = await mc.mission_database_client.get_missions({"robot": robot_name, "most_recent": 50})
+        for m in missions:
+            if m.robot == robot_name and m.mission_tree and m.mission_tree[0].action:
+                if m.mission_tree[0].action.action_type == action_type:
+                    if m.status.state == MissionStateV1.COMPLETED:
+                        return True
+                    if m.status.state in (MissionStateV1.FAILED, MissionStateV1.CANCELED):
+                        raise HTTPException(status_code=500,
+                                            detail=f"Map action {action_type} failed for robot {robot_name}")
+        await asyncio.sleep(2)
+    raise HTTPException(status_code=504,
+                        detail=f"Timeout waiting for {action_type} mission completion for robot {robot_name}")
