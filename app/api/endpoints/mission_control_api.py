@@ -27,6 +27,7 @@ from cloud_common.objects.robot import RobotStateV1
 from cloud_common.objects.mission import MissionStateV1
 import yaml
 import time
+import asyncio
 
 
 app = FastAPI(
